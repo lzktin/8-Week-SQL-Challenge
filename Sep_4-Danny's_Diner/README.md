@@ -31,19 +31,56 @@ SELECT
     SUM(CASE WHEN product_id IS NULL THEN 1 ELSE 0 END) AS null_product_ids
 FROM sales;
 ```
+__Explanation:__
+* 
+
 Output:
 | null_customer_ids | null_dates | null_product_ids |
 | ----------------- | ---------- | ---------------- |
 | 0                 | 0          | 0                |
 
-Using the same strategy to check the menu table and members table, we find that they have no missing values either.
+There are no null values.
 
-* Checking for duplicate entries
+Using the same strategy to check the `menu` and `members` tables, it is discovered they have no missing values either.
+
+* Filter duplicate entries
 
 ```sql
-
+WITH indexed_menu AS (
+SELECT
+  	*,
+  	ROW_NUMBER() OVER(
+    	PARTITION BY product_name, price
+      	ORDER BY product_id ASC
+    ) AS index
+  	FROM menu
+)
+SELECT 
+	*
+FROM
+	indexed_menu
+WHERE 
+	index = 1
+ORDER BY
+	product_id ASC
 ```
+__Explanation:__
+* Create a CTE with a new column `index` using ROW_NUMBER() to assign row numbers based on product_name and price. Entries with the same product_name and price will be assigned row numbers (1,2,3..) in ascending order of product_id.
+* Select only entries with `index` 1 to guarantee only one instance exists for each restaurant product.
 
+Output:
+| product_id | product_name | price |
+| ---------- | ------------ | ----- |
+| 1          | sushi        | 10    |
+| 2          | curry        | 15    |
+| 3          | ramen        | 12    |
+
+Use the same strategy on the `members` table filter entries with the same `customer_id` and `join_date`. 
+
+The `sales` table is omitted because it has no primary key, so entries with identical `customer_id`, `product_id` and `order_date` could be a customer ordering the same item multiple times on the same date.
+
+### Case Study Questions
+1. What is the total amount each customer spent at the restaurant?
 ```sql
 SELECT 
 	s.customer_id,
