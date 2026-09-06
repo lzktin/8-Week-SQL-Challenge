@@ -19,10 +19,8 @@ All queries are written in PostgreSQL.
 
 Copy the solution code and execute on [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138) to see the results!
 
-### Check data quality
-Before analysis, always check the quality of data. Here is a brief scan:
-
-* Check missing values with SUM and CASE WHEN
+### Brief Data Quality Check
+1. Check missing values with SUM and CASE WHEN
 
 ```sql
 SELECT
@@ -32,7 +30,7 @@ SELECT
 FROM sales;
 ```
 __Explanation:__
-* 
+* Use __SUM__ to aggregate null counts for each column. Nest a __CASE WHEN__ statement to increment 1 to the count every time NULL is encountered, and 0 otherwise.
 
 Output:
 | null_customer_ids | null_dates | null_product_ids |
@@ -43,7 +41,7 @@ There are no null values.
 
 Using the same strategy to check the `menu` and `members` tables, it is discovered they have no missing values either.
 
-* Filter duplicate entries
+2. Filter duplicate entries
 
 ```sql
 WITH indexed_menu AS (
