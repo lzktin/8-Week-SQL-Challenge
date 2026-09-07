@@ -18,7 +18,7 @@ Note that the sales table has no primary key.
 All queries are written in PostgreSQL.
 
 Copy the solution code and execute on [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138) to see the results!
-
+***
 ### Brief Data Quality Check
 1. Check missing values with SUM and CASE WHEN
 
@@ -40,8 +40,8 @@ Output:
 There are no null values.
 
 Using the same strategy to check the `menu` and `members` tables, it is discovered they have no missing values either.
-
-2. Filter duplicate entries
+***
+2. Remove duplicates
 
 ```sql
 WITH indexed_menu AS (
@@ -76,7 +76,7 @@ Output:
 Use the same strategy on the `members` table filter entries with the same `customer_id` and `join_date`. 
 
 The `sales` table is omitted because it has no primary key, so entries with identical `customer_id`, `product_id` and `order_date` could be a customer ordering the same item multiple times on the same date.
-
+***
 ### Case Study Questions
 1. What is the total amount each customer spent at the restaurant?
 ```sql
@@ -85,7 +85,7 @@ SELECT
     SUM(m.price) AS spending
 FROM
 	sales s
-LEFT JOIN
+INNER JOIN
 	menu m
     ON s.product_id = m.product_id
 GROUP BY
@@ -93,8 +93,19 @@ GROUP BY
 ORDER BY
 	s.customer_id ASC;
 ```
+__Explanation:__
+* INNER JOIN the menu table to the sales table to connect `customer_id` to `price`.
+* SUM the order prices of all customers and group result by `customer_id` to see the total spending of each customer.
 
+Output:
+| customer_id | spending |
+| ----------- | -------- |
+| A           | 76       |
+| B           | 74       |
+| C           | 36       |
 
-
+Customer A and B spent the most at the restaurant with totals over $70. Customer C only spent $36, less than half the spending of customer A or B.
+***
+2. 
 
 Note: The context of this case study is sourced from the [challenge website](https://8weeksqlchallenge.com/case-study-1/) by Danny Ma.
