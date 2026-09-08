@@ -1,4 +1,4 @@
-# September 5 - Danny's Diner
+# September 8 - Danny's Diner
 ![Case Study 1, Danny's Diner](imgs/caseStudy01.png)
 
 <!-- ## Table of Contents
@@ -110,7 +110,7 @@ Customer A and B spent the most at the restaurant with totals over $70. Customer
 ```sql
 SELECT
 	s.customer_id,
-    COUNT(DISTINCT s. order_date) AS days_visited
+    COUNT(DISTINCT s.order_date) AS days_visited
 FROM
 	sales s
 GROUP BY
@@ -119,7 +119,7 @@ ORDER BY
 	s.customer_id ASC;
 ```
 __Explanation:__
-* XXX
+* Use COUNT DISTINCT to aggregate the total number of days each customer visited the restaurant.
 
 Output:
 | customer_id | days_visited |
@@ -128,6 +128,7 @@ Output:
 | B           | 6            |
 | C           | 2            |
 
+Customer B is the most frequent customer, visiting six days total.
 ***
 3. What was the first item from the menu purchased by each customer?
 ```sql
@@ -158,7 +159,8 @@ ORDER BY
 __Assumption:__ For multiple purchases on the same date, the first one encountered is assumed as first purchased.
 
 __Explanation:__
-* XXX
+* Create a new column `index` within a CTE `ranked` using ROW_NUMBER, grouping rows by `customer_id` and assigning number labels in ascending order of `order_date`. 
+* INNER JOIN `menu` to the CTE and select the `customer_id` and `product_name` of all orders with `index` equal to 1.
 
 Output:
 | customer_id | product_name |
@@ -167,6 +169,7 @@ Output:
 | B           | curry        |
 | C           | ramen        |
 
+From this sample, there seems to be no preference for first purchase. Each of the three menu items was picked exactly once by the three customers.
 ***
 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 ```sql
@@ -184,7 +187,7 @@ WITH most_purchased_item AS (
     ORDER BY
       	cnt DESC 
     LIMIT 1
-    )
+)
 SELECT
     s.customer_id,
     m.product_name,
@@ -202,7 +205,8 @@ ORDER BY
     customer_id ASC;
 ```
 __Explanation:__
-* 
+* Create a new column `cnt` in a CTE `most_purchased_item` by using COUNT grouped by `product_id` and `product_name`, and select the most popular product by ordering in descending `cnt` and limiting output to 1.
+* Select all rows from `sales` inner joined to `menu` with `product_id` equal to the id of the most popular item in the CTE. Add a new column `number_of_purchases` using COUNT(*) to see how many times the most popular item was bought by each customer.
 
 Output:
 | customer_id | product_name | number_of_purchases |
@@ -211,6 +215,7 @@ Output:
 | B           | ramen        | 2                   |
 | C           | ramen        | 3                   |
 
+Ramen is the most popular food, purchased 8 times total and evenly split among all three customers.
 ***
 5. Which item was the most popular for each customer?
 ```sql
@@ -230,7 +235,7 @@ WITH purchase_counts AS (
       	ON s.product_id=m.product_id
     GROUP BY
     	s.customer_id, m.product_name
-    )
+)
 SELECT
     customer_id,
     product_name AS most_purchased_item,
@@ -243,7 +248,8 @@ ORDER BY
     customer_id ASC;
 ```
 __Explanation:__
-* 
+* Create a CTE `purchase_counts` with two new columns `cnt` using COUNT and `rank` using DENSE_RANK grouped by `customer_id` and ordered in descending COUNT.
+* Select from the CTE the rows where `rank` is 1 (Most purchased product).
 
 Output:
 | customer_id | most_purchased_item | number_of_times_purchased |
@@ -254,6 +260,7 @@ Output:
 | B           | sushi               | 2                         |
 | C           | ramen               | 3                         |
 
+While A and C purchased ramen the most, customer B purchased all items from the menu equally.
 ***
 6. Which item was purchased first by the customer after they became a member?
 ```sql
@@ -276,7 +283,7 @@ WITH indexed AS (
       	ON s.product_id=m.product_id
     WHERE
     	me.join_date <= s.order_date
-    )
+)
 SELECT
     customer_id,
     product_name AS first_purchase_after_member,
@@ -291,7 +298,8 @@ ORDER BY
 __Assumption:__ For multiple purchases on the same date, the first one encountered is assumed as first purchased.
 
 __Explanation:__
-* 
+* Create a CTE `indexed` by INNER joining the `members` and `menu` table to `sales`. Create a new column `row_num` by using ROW_NUMBER, grouping rows by `customer_id` and ordered in ascending order date. Filter the CTE table by only rows with an order date on or after member join date.
+* Select from the CTE all rows with `row_num` equal to 1, indicating the first purchase.
 
 Output:
 | customer_id | first_purchase_after_member | order_date |
@@ -299,6 +307,7 @@ Output:
 | A           | curry                       | 2021-01-07 |
 | B           | sushi                       | 2021-01-11 |
 
+A bought curry after becoming a member, while B bought sushi.
 ***
 7. Which item was purchased just before the customer became a member?
 ```sql
@@ -320,7 +329,7 @@ WITH indexed AS (
     	me.join_date > s.order_date
     )
 SELECT
-  customer_id,
+    customer_id,
     product_name AS last_purchase_before_member,
     order_date
 FROM
@@ -333,7 +342,8 @@ ORDER BY
 __Assumption:__ For multiple purchases on the same date, the first one encountered is assumed as first purchased.
 
 __Explanation:__
-* 
+* Same logic as previous question, but `row_num` is calculated in descending `order_date` instead of ascending, and the CTE is filtered by only rows with an order date before the member join date.
+* `row_num`=1 now indicates the latest purchase before becoming a member.
 
 Output:
 | customer_id | last_purchase_before_member | order_date |
@@ -341,6 +351,7 @@ Output:
 | A           | sushi                       | 2021-01-01 |
 | B           | sushi                       | 2021-01-04 |
 
+Both customers A and B bought sushi before becoming a member.
 ***
 8. What is the total items and amount spent for each member before they became a member?
 ```sql
@@ -360,7 +371,7 @@ WITH filtered AS (
         ON s.product_id=m.product_id
     WHERE
     	me.join_date > s.order_date
-    )
+)
 SELECT
     customer_id,
     SUM(price) AS total_spent,
@@ -373,7 +384,8 @@ ORDER BY
     customer_id ASC;
 ```
 __Explanation:__
-* 
+* Create a CTE `filtered` by INNER joining the `members` and `menu` tables, filtering to only rows with an order date before the member join date.
+* From this CTE, select `customer_id` and two new columns `total_spent` with SUM of price and `total_items_purchased` with COUNT.
 
 Output:
 | customer_id | total_spent | total_items_purchased |
@@ -381,6 +393,7 @@ Output:
 | A           | 25          | 2                     |
 | B           | 40          | 3                     |
 
+Bringing back the total spending calculations from earlier (A: $76) and (B: $74), most of A's spending occurred after becoming a member, and almost half of B's ($34).
 ***
 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 ```sql
@@ -410,7 +423,8 @@ ORDER BY
     customer_id ASC;
 ```
 __Explanation:__
-* 
+* Create a CTE `point_calcualtion` with a new column `points`, which calculates the point value of each order item. Use CASE WHEN to assign `price` times 20 for sushi and `price` times 10 for all other menu items.
+* Select from `point_calculations` the `customer_id` and a new column `total_points` using SUM of the points column, grouped by `customer_id`.
 
 Output:
 | customer_id | total_points |
@@ -419,6 +433,7 @@ Output:
 | B           | 940          |
 | C           | 360          |
 
+Customer A and B have the most points, being the customers in the sample with the most spending and items purchased.
 ***
 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 ```sql
@@ -457,7 +472,7 @@ ORDER BY
     customer_id ASC;
 ```
 __Explanation:__
-* 
+* Same logic as previous question, but the CASE WHEN logic for the `points` column is changed so that `price` times 20 is not only assigned to sushi but also rows with an order-date within a week past the member join date. `point_calculation` is also now filtered to only rows in month 1 (Jan), using EXTRACT.
 
 Output:
 | customer_id | total_points |
@@ -465,8 +480,13 @@ Output:
 | A           | 1370         |
 | B           | 940          |
 
+With this new points calculation, customer A has significantly more points than B. B's points calculation is also the same as before. Thus, customer A made plenty of purchases in the week after becoming a member, while B did not make any.
 ***
-
+### Final Advice
+* From the given sample, it can be inferred ramen is the most popular restaurant item. Thus, restaurant __promotion should highlight ramen__ as its most delicious food.
+* The points system can be a good way to encourage customers to spend more after becoming loyalty members. But there should be an __incentive for gathering points__, such as redeeming discount coupons at different point thresholds.
+* Providing a __larger customer sample__ for analysis is advised, as the conclusions drawn from a sample of only three customers are extremely limited.
+***
 ### Extra Questions
 1. Join `sales`, `menu` and `members` into a single table with the fields `customer_id`, `order_date`, `product_name`, `price`, and `member` (Y/N).
 ```sql
