@@ -7,7 +7,7 @@
 3. [Question and Solution](#question-and-solution) -->
 
 ## Business Problem
-Danny has been operating his new restaurant for a few months. He wants to know if he should expand the current customer loyalty program based on the visiting and spending patterns of his customers, aiming to deliver a better and more personalized experience for loyalty members.
+Danny has been operating his new restaurant for a few months. He wants to know if he should expand the current customer loyalty program based on the visiting and spending patterns of his customers, aiming to deliver a better and more personalized experience for loyalty members. [Jump to Final Insights](#final-advice)
 
 ## Tables and Data Structure
 ![Table relationship diagram](imgs/relations.png)
