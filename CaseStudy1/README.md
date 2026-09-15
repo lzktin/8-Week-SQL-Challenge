@@ -1,11 +1,6 @@
 # September 8 - Danny's Diner
 ![Case Study 1, Danny's Diner](imgs/caseStudy01.png)
 
-<!-- ## Table of Contents
-1. [Business Problem](#business-problem)
-2. [Tables and Data Structure](#tables-and-data-structure)
-3. [Question and Solution](#question-and-solution) -->
-
 ## Business Problem
 Danny has been operating his new restaurant for a few months. He wants to know if he should expand the current customer loyalty program based on the visiting and spending patterns of his customers, aiming to deliver a better and more personalized experience for loyalty members. [Jump to Final Insights](#final-advice)
 
@@ -19,7 +14,7 @@ All queries are written in PostgreSQL.
 
 Copy the solution code and execute on [DB Fiddle](https://www.db-fiddle.com/f/2rM8RAnq7h5LLDTzZiRWcd/138) to see the results!
 ***
-### Brief Data Quality Check
+### Data Cleaning
 1. Check missing values with SUM and CASE WHEN
 
 ```sql
