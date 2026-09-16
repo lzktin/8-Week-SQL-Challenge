@@ -5,7 +5,7 @@ This repository houses my solution to the 8 case studies in Danny Ma's [8-Week S
 It showcases my proficiency in using SQl to solve various data problems. New challenge every Tuesday!
 
 ## List of Case Studies
-*  [CaseStudy2](CaseStudy2/README.md) (Completed 15-Sep)
+*  [CaseStudy2](CaseStudy2/README.md) (Completed 16-Sep)
 *  [CaseStudy1](CaseStudy1/README.md) (Completed 8-Sep)
 ***
 * CaseStudy3 (Upload 22-Sep)
