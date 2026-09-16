@@ -1,8 +1,8 @@
-# September 15 - Pizza Runner
+# September 16 - Pizza Runner
 ![Case Study 1, Danny's Diner](imgs/caseStudy02.png)
 
 ## Business Problem
-Danny has opened a pizza uber. He wants insights on his customers and currently employed runners. [Jump to Final Insights](#final-advice)
+Danny has opened a pizza uber. He wants insights on his customers and currently employed runners.
 
 ## Tables and Data Structure
 ![Table relationship diagram](imgs/relations.png)
@@ -605,7 +605,7 @@ GROUP BY
 	p.pizza_id;
 ```
 __Explanation:__
-* 
+* Replace the digits in the comma-separated string of `toppings` with the actual ingredient names. Split the toppings for each pizza in `pizza_recipes` into a table, then inner join to the `pizza_toppings` table to connect the ingredient names. After, combine the ingredient names into a new comma-separated string with string_agg().
 
 Output:
 | pizza_id | toppings                                                              |
@@ -640,12 +640,16 @@ INNER JOIN
 	ON CAST(x.id AS INT)=t.topping_id;
 ```
 __Explanation:__
-* 
+* Use regexp_split_to_table() to separate the comma-delimited list of `extras` in `clean_customer_orders`.
+* Count the number of rows and group by the topping id, ordering by descending count and selecting only the first row.
+* Identify the selected topping in the `pizza_toppings` table.
 
 Output:
 | topping_id | topping_name | cnt |
 | ---------- | ------------ | --- |
 | 1          | Bacon        | 4   |
+
+Bacon is the most commonly added extra.
 ***
 3. What was the most common exclusion?
 ```sql
@@ -674,12 +678,14 @@ INNER JOIN
 	ON CAST(x.id AS INT)=t.topping_id;
 ```
 __Explanation:__
-* 
+* Same methodology as selecting the most popular extra. Split the comma-delimited list with regexp_split_to_table(), count the rows and order by desending count, select top row and identify corresponding ingredient in `pizza_toppings` table.
 
 Output:
 | topping_id | topping_name | cnt |
 | ---------- | ------------ | --- |
 | 4          | Cheese       | 4   |
+
+Cheese is the most commonly excluded topping.
 ***
 4. Generate an order item for each record in the customers_orders table in the format:  'Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers'
 ```sql
@@ -750,7 +756,9 @@ ORDER BY
 	order_id ASC;
 ```
 __Explanation:__
-* 
+* Create a CTE `base` by adding a primary key column `index` with ROW NUMBER() and selecting all relevant columns.
+* Create two CTEs `exclusions` and `extras` to replace the digits in the comma-delimited strings with the actual ingredient names.
+* Using the result in `exclusions` and `extras`, create the desired item names with CASE WHEN to check the presence of excluded or extra-added ingredients.
 
 Output:
 | order_id | item                                                            |
@@ -846,7 +854,11 @@ FROM
 	replace_numbers r
 ```
 __Explanation:__
-* 
+* Create a CTE `base` by adding a primary key column `index` with ROW NUMBER() and selecting all relevant columns. Remove commas from `exclusions` column with REGEXP_REPLACE() and enclose in [] to make a regex pattern.
+* Create a CTE `extras` to replace the digits in the comma-delimited strings with actual ingredient names.
+* In the next CTE `filter_exclusion`, we take the ingredient list in the previous CTE `extras` and replace every comma with a '|' character to create a regex pattern. We also remove the excluded ingredients from the digit ingredient list from `base` using the regex pattern made for `exclusions` in step 1.
+* In the last CTE `replace_numbers`, replace the comma-delimited string of digits from `filter_exclusion` with the actual ingredient names.
+* Finally, add the relevant notation using the regex pattern for extras made in `filter_exclusion`.
 
 Output:
 | order_id | ingredient_list                                                         |
@@ -865,8 +877,5 @@ Output:
 | 9        | 2xBacon, BBQ Sauce, Beef, 2xChicken, Mushrooms, Pepperoni, Salami       |
 | 10       | Bacon, BBQ Sauce, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami   |
 | 10       | 2xBacon, Beef, 2xCheese, Chicken, Pepperoni, Salami                     |
-***
-### Final Advice
-* 
 ***
 Note: The context of this case study is sourced from the [challenge website](https://8weeksqlchallenge.com/case-study-2/) by Danny Ma.
