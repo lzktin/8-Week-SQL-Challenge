@@ -177,7 +177,8 @@ GROUP BY
 	r.runner_id;
 ```
 __Explanation:__
-* 
+* Count the orders with COUNT() and group by the id of each runner.
+* Runner 4 did not take any orders yet, so we join the `runner` table to the `clean_runner_orders` table so they do not get left out.
 
 Output:
 | runner_id | successful_orders |
@@ -186,6 +187,8 @@ Output:
 | 2         | 3                 |
 | 3         | 1                 |
 | 4         | 0                 |
+
+Eight successful orders total, with most taken by runners 1 and 2.
 ***
 4. How many of each type of pizza was delivered?
 ```sql
@@ -198,7 +201,7 @@ FROM
 INNER JOIN
 	pizza_names p
     ON c_o.pizza_id=p.pizza_id
-LEFT JOIN
+INNER JOIN
 	clean_runner_orders r_o
 	ON c_o.order_id=r_o.order_id
 WHERE
@@ -207,20 +210,22 @@ GROUP BY
 	c_o.pizza_id, p.pizza_name;
 ```
 __Explanation:__
-* 
+* Count the number of rows excluding orders that have been cancelled, and group by `pizza id` and `pizza_name`.
 
 Output:
 | pizza_id | pizza_name | num_delivered |
 | -------- | ---------- | ------------- |
 | 1        | Meatlovers | 9             |
 | 2        | Vegetarian | 3             |
+
+12 delivered pizzas total, 75% Meatlovers and 25% Vegetarian.
 ***
 5. How many Vegetarian and Meatlovers were ordered by each customer?
 ```sql
 SELECT
 	c_o.customer_id,
     p.pizza_name,
-    COUNT(p.pizza_name)
+    COUNT(*)
 FROM
 	clean_customer_orders c_o
 INNER JOIN
@@ -232,7 +237,7 @@ ORDER BY
 	c_o.customer_id ASC;
 ```
 __Explanation:__
-* 
+* Count the number of rows and group by `customer_id` and `pizza_name`.
 
 Output:
 | customer_id | pizza_name | count |
@@ -245,6 +250,8 @@ Output:
 | 103         | Vegetarian | 1     |
 | 104         | Meatlovers | 3     |
 | 105         | Vegetarian | 1     |
+
+Meatlovers is preferred between most customers, but most have also ordered at least one Vegetarian pizza.
 ***
 6. What was the maximum number of pizzas delivered in a single order?
 ```sql
@@ -265,12 +272,15 @@ ORDER BY
 LIMIT 1;
 ```
 __Explanation:__
-* 
+* Count the number of rows in `clean_customer_orders`, remembering to filter out cancelled orders with `clean_runner_orders`.
+* Group the count by `order_id`, and order by count descending and select only the first row.
 
 Output:
 | order_id | num_pizzas |
 | -------- | ---------- |
 | 4        | 3          |
+
+The most number of pizzas ordered at once is 3.
 ***
 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 ```sql
@@ -289,7 +299,7 @@ GROUP BY
 	c_o.customer_id;
 ```
 __Explanation:__
-* 
+* Define a change as either an exclusion or extra. Use __CASE WHEN__ statements based on this condition inside __SUM__ to calculate the number of changed and unchanged pizzas, and group by `customer_id`.
 
 Output:
 | customer_id | num_pizzas_changed | num_pizzas_no_change |
@@ -299,6 +309,8 @@ Output:
 | 105         | 1                  | 0                    |
 | 104         | 2                  | 1                    |
 | 103         | 3                  | 0                    |
+
+Two customers only order pizzas unchanged, and two always order pizzas changed. One customer, 104, orders both changed and unchanged pizzas.
 ***
 8. How many pizzas were delivered that had both exclusions and extras?
 ```sql
@@ -315,18 +327,20 @@ WHERE
     AND extras IS NOT NULL;
 ```
 __Explanation:__
-* 
+* Count all rows in the `clean_customer_orders` table where the delivery was not cancelled, and the `exclusions` and `extras` columns are not NULL.
 
 Output:
 | count |
 | ----- |
 | 1     |
+
+Only one pizza delivered had both exclusions and extras.
 ***
 9. What was the total volume of pizzas ordered for each hour of the day?
 ```sql
 SELECT 
 	EXTRACT(HOUR FROM order_time) AS hour,
-    COUNT(*) AS num_orders
+    COUNT(DISTINCT order_id) AS num_orders
 FROM 
 	clean_customer_orders
 GROUP BY 
@@ -335,17 +349,20 @@ ORDER BY
 	hour ASC;
 ```
 __Explanation:__
-* 
+* EXTRACT() the hour from the timestamp in the `order_time` column and rename as `hour`.
+* Count all distinct `order_id` and group by the new `hour` column.
 
 Output:
 | hour | num_orders |
 | ---- | ---------- |
 | 11   | 1          |
-| 13   | 3          |
-| 18   | 3          |
+| 13   | 1          |
+| 18   | 2          |
 | 19   | 1          |
 | 21   | 3          |
-| 23   | 3          |
+| 23   | 2          |
+
+Most orders are received during the evening, with hours 21:00, 18:00 and 23:00 receiving the most orders.
 ***
 10. What was the volume of orders for each day of the week?
 ```sql
@@ -360,7 +377,8 @@ ORDER BY
 	num_orders DESC;
 ```
 __Explanation:__
-* 
+* TO_CHAR() converts the `order_time` timestamp into a formatted day string, i.e 'Monday' 'Tuesday' etc. Name this column `day`.
+* Count the distinct `order_id` and group by `day`.
 
 Output:
 | day       | num_orders |
@@ -369,6 +387,8 @@ Output:
 | Saturday  | 2          |
 | Thursday  | 2          |
 | Friday    | 1          |
+
+Wednesday has the most orders, 5.
 ***
 Part B: Runner and Customer Experience
 1. How many runners signed up for each 1 week period?
@@ -382,7 +402,8 @@ GROUP BY
 	week;
 ```
 __Explanation:__
-* 
+* EXTRACT() the week from the the `registration_date` timestamp, adding 7 to prevent the function from mistaking the first week as the last week of the previous year. Rename this column `week`.
+* Count the rows and group by `week`.
 
 Output:
 | week | num_runners |
@@ -390,6 +411,8 @@ Output:
 | 3    | 1           |
 | 1    | 2           |
 | 2    | 1           |
+
+Two runners signed up on week 1, with one new runner in subsequent weeks so far.
 ***
 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
     - Ignoring null entries
@@ -410,7 +433,8 @@ ORDER BY
 	r_o.runner_id ASC;
 ```
 __Explanation:__
-* 
+* Calculate the difference between `pickup_time` and `order_time`, extracting EPOCH as the value in seconds and dividing by 60 to obtain the value in minutes. Name this column `avg_time`.
+* Group `avg_time` by `runner_id`.
 
 Output:
 | runner_id | avg_time |
@@ -418,6 +442,8 @@ Output:
 | 1         | 16       |
 | 2         | 24       |
 | 3         | 10       |
+
+Runner three is the fastest, with an average time of 10 minutes. Runner two takes the longest, with an average time of 24 minutes. Could these times be faster?
 ***
 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
     - Preparation time is `pickup_time`-`order_time`. 
@@ -452,7 +478,8 @@ GROUP BY
 	cnt.pizza_count;
 ```
 __Explanation:__
-* 
+* Create a CTE to calculate the `pizza_count` for each order, including the columns `order_id` and `order_time`.
+* Use the same EPOCH method as before to calculate the preparation time in minutes. Name the column `prep_time_mins` and group by the `pizza_count`.
 
 Output:
 | pizza_count | prep_time_mins |
@@ -460,12 +487,14 @@ Output:
 | 1           | 12             |
 | 2           | 18             |
 | 3           | 29             |
+
+There is a positive correlation between pizza count and preparation time.
 ***
 4. What was the average distance travelled for each customer?
 ```sql
 SELECT 
 	c_o.customer_id,
-    ROUND(AVG(CAST(r_o.distance_km AS FLOAT))) AS avg_dist_km
+    ROUND(AVG(r_o.distance)) AS avg_dist_km
 FROM
 	clean_customer_orders c_o
 INNER JOIN
@@ -477,7 +506,7 @@ GROUP BY
 	c_o.customer_id;
 ```
 __Explanation:__
-* 
+* Calculate the average `distance` from `clean_runner_orders`, excluding cancelled orders. Group by `customer_id`.
 
 Output:
 | customer_id | avg_dist_km |
@@ -487,39 +516,43 @@ Output:
 | 105         | 25          |
 | 104         | 10          |
 | 103         | 23          |
+
+Of all the customers, 105 has the largest distance travelled at 25km, and 104 has the shortest distance at 10km.
 ***
 5. What was the difference between the longest and shortest delivery times for all orders?
 ```sql
 SELECT
-	MAX(duration_mins) - MIN(duration_mins) AS largest_diff
+	MAX(duration) - MIN(duration) AS largest_diff
 FROM
 	clean_runner_orders
 WHERE
-	duration_mins IS NOT NULL;
+	duration IS NOT NULL;
 ```
 __Explanation:__
-* 
+* Calculate the difference between the MAX() and MIN() of `duration`.
 
 Output:
 | largest_diff |
 | ------------ |
 | 30           |
+
+The largest difference is 30 minutes between all orders.
 ***
 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 ```sql
 SELECT
 	runner_id,
-	ROUND(AVG(distance_km/duration_mins * 60)) AS avg_speed_km_h
+	ROUND(AVG(distance/duration * 60)) AS avg_speed_km_h
 FROM
 	clean_runner_orders
 WHERE
-	distance_km IS NOT NULL
-    AND duration_mins IS NOT NULL
+	distance IS NOT NULL
+    AND duration IS NOT NULL
 GROUP BY
 	runner_id;
 ```
 __Explanation:__
-* 
+* Calculate the average speed as `distance` over `duration`, multiplying by 60 to convert km/min to km/hour. Only include rows where distance and duration are not NULL. Group the result by `runner_id`.
 
 Output:
 | runner_id | avg_speed_km_h |
@@ -527,6 +560,8 @@ Output:
 | 3         | 40             |
 | 2         | 63             |
 | 1         | 46             |
+
+Runner 2 has the highest average speed at 63 km/h, significantly higher than the other two runners whose speed lands in the 40km/h-50km/h range.
 ***
 7. What is the successful delivery percentage for each runner?
 ```sql
@@ -539,7 +574,7 @@ GROUP BY
 	runner_id;
 ```
 __Explanation:__
-* 
+* Calculate the percentage as the total number of cancelled orders over the total orders. Multiply the result by 100 and group by `runenr_id`.
 
 Output:
 | runner_id | delivery_success_percentage |
@@ -547,6 +582,10 @@ Output:
 | 3         | 50                          |
 | 2         | 75                          |
 | 1         | 100                         |
+
+Runner 1 had no cancelled deliveries.
+Runner 2 had one cancelled delivery out of 4, amounting to a 75% success rate.
+Runner 3 had one cancelled delivery out of 2, amounting to a 50% success rate.
 ***
 Part C: Ingredient Optimization
 1. What are the standard ingredients for each pizza?
@@ -828,8 +867,6 @@ Output:
 | 10       | 2xBacon, Beef, 2xCheese, Chicken, Pepperoni, Salami                     |
 ***
 ### Final Advice
-* From the given sample, it can be inferred ramen is the most popular restaurant item. Thus, restaurant __promotion should highlight ramen__ as its most delicious food.
-* The points system can be a good way to encourage customers to spend more after becoming loyalty members. But there should be an __incentive for gathering points__, such as redeeming discount coupons at different point thresholds.
-* Providing a __larger customer sample__ for analysis is advised, as the conclusions drawn from a sample of only three customers are extremely limited.
+* 
 ***
 Note: The context of this case study is sourced from the [challenge website](https://8weeksqlchallenge.com/case-study-2/) by Danny Ma.
