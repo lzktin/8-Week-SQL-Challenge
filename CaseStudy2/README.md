@@ -7,8 +7,6 @@ Danny has opened a pizza uber. He wants insights on his customers and currently 
 ## Tables and Data Structure
 ![Table relationship diagram](imgs/relations.png)
 
-Note that the sales table has no primary key.
-
 ## Question and Solution
 All queries are written in PostgreSQL.
 
