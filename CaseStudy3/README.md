@@ -1,5 +1,5 @@
-# September 16 - Pizza Runner
-![Case Study 1, Danny's Diner](imgs/caseStudy03.png)
+# September 22 - Foodie-Fi
+![Case Study 3, Danny's Diner](imgs/caseStudy03.png)
 
 ## Business Problem
 Danny has been selling monthly and annual subscriptions for his new startup Foodie-Fi, giving customers unlimited access to exclusive food videos from around the world. He wants to know about the performance of his startup.

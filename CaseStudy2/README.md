@@ -1,5 +1,5 @@
 # September 16 - Pizza Runner
-![Case Study 1, Danny's Diner](imgs/caseStudy02.png)
+![Case Study 2, Danny's Diner](imgs/caseStudy02.png)
 
 ## Business Problem
 Danny has opened a pizza uber. He wants insights on his customers and currently employed runners.
