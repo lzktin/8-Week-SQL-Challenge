@@ -1,5 +1,5 @@
 # September 29 - Data Bank
-![Case Study 4, Danny's Diner](imgs/caseStudy04.png)
+![Case Study 4, Data Bank](imgs/caseStudy04.png)
 
 ## Business Problem
 Danny needs help analyzing the data from his digital bank. He wants to know about his customer distribution across the globe, and customer transactions.
