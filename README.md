@@ -2,7 +2,7 @@
 
 This repository houses my solution to the 8 case studies in Danny Ma's [8-Week SQL Challenge](https://8weeksqlchallenge.com/).
 
-It showcases my proficiency in using SQl to solve various data problems. New challenge every Tuesday!
+It showcases my proficiency in using SQl to solve various data problems. 
 
 ## List of Case Studies
 *  [CaseStudy5](CaseStudy5/README.md) (Completed 7-Oct)
