@@ -1,5 +1,5 @@
 # October 14 - Clique Bait
-![Case Study 5, Clique Bait](imgs/caseStudy06.png)
+![Case Study 6, Clique Bait](imgs/caseStudy06.png)
 
 ## Business Problem
 Danny needs help analyzing the sales performance of his online supermarket.
