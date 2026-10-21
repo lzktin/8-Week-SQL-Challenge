@@ -171,4 +171,4 @@ Output:
 | 12      | Checkout     | 2103      |
 | 1       | Home Page    | 1782      |
 ***
-Note: The context of this case study is sourced from the [challenge website](https://8weeksqlchallenge.com/case-study-7/) by Danny Ma.
+Note: The context of this case study is sourced from the [challenge website](https://8weeksqlchallenge.com/case-study-6/) by Danny Ma.
