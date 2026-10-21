@@ -1,9 +1,6 @@
 # October 14 - Clique Bait
 ![Case Study 6, Clique Bait](imgs/caseStudy06.png)
 
-## Business Problem
-Danny needs help analyzing the sales performance of his online supermarket.
-
 ## Tables and Data Structure
 ![Table relationship diagram](imgs/relations.png)
 
@@ -96,7 +93,7 @@ Output:
 | 4          | Ad Impression | 876        |
 | 5          | Ad Click      | 702        |
 ***
-5. What is the total count of transactions for each platform
+5. What is the total count of transactions for each platform?
 
 ```sql
 SELECT
